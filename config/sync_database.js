@@ -7,6 +7,6 @@ require("../models/oneTimeCode");
 require("../models/bookRequest")
 
 sequelize
-  .sync({ force: true }) // <-- auto updates schema
+  .sync({ alter: true }) // <-- auto updates schema without deleting
   .then(() => console.log("✅ All models synchronized (altered) with DB."))
   .catch((err) => console.error("❌ Sync failed:", err));

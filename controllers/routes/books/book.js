@@ -108,7 +108,6 @@ router.get("/", verifyToken, async (req, res) => {
       offset,
       limit,
       order: [
-        ["id", "DESC"],
         ["createdAt", "DESC"],
       ],
     });

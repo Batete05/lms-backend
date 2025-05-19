@@ -69,7 +69,7 @@ exports.annotations = {
         },
       },
     },
-    "/book": {
+    "v1/book": {
       post: {
         tags: ["Book"],
         summary: "Register a new book",
@@ -132,7 +132,7 @@ exports.annotations = {
         },
       },
     },
-    "/bookrequest": {
+    "/v1/bookRequest": {
       post: {
         tags: ["Book Request"],
         summary: "Request a book",

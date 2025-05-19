@@ -12,21 +12,19 @@ router.post("/", verifyToken, authorizeRoles("STUDENT"), async (req, res) => {
   try {
     const { bookName } = req.body;
 
-    // Confirm that bookName exists in Book table
     const book = await Book.findOne({ where: { bookName } });
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
 
-    // Confirm that current user's name exists in User table
-    const student = await User.findOne({ where: { name: req.user.name } });
+    const student = await User.findByPk(req.user.id);
     if (!student) {
       return res.status(404).json({ message: "Student user not found" });
     }
 
     const request = await BookRequest.create({
-      bookName: book.bookName,
-      studentName: student.name,
+      bookId: book.id,
+      studentId: student.id,
       status: "pending",
     });
 
@@ -36,19 +34,25 @@ router.post("/", verifyToken, authorizeRoles("STUDENT"), async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+
+router.get("/", verifyToken, authorizeRoles("ADMIN"), async (req, res) => {
   try {
     const books = await BookRequest.findAll({
-      order: [["bookName", "ASC"]], // or any valid column
+      include: [
+        { model: User, as: "student", attributes: ["id", "name", "email"] },
+        { model: Book, as: "book", attributes: ["id", "bookName"] },
+      ],
+      order: [["createdAt", "DESC"]],
     });
 
-    if (!books || books.length === 0) {
-      return res.status(404).json({ message: "No books found" });
+    if (!books.length) {
+      return res.status(404).json({ message: "No book requests found" });
     }
 
-    return res
-      .status(200)
-      .json({ message: "Books fetched successfully", books });
+    return res.status(200).json({
+      message: "Book requests fetched successfully",
+      requests: books,
+    });
   } catch (err) {
     return res.status(500).json({
       message: "Internal server error",
@@ -56,4 +60,5 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 module.exports = router;

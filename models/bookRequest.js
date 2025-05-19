@@ -1,27 +1,20 @@
-// models/BookRequest.js
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config/dbConnection");
-
-const BookRequest = sequelize.define(
-  "BookRequest",
-  {
+// models/bookRequest.js
+module.exports = (sequelize, DataTypes) => {
+  const BookRequest = sequelize.define("BookRequest", {
     status: {
-      type: DataTypes.ENUM("pending", "approved", "rejected"),
+      type: DataTypes.STRING,
+      allowNull: false,
       defaultValue: "pending",
     },
-    studentName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    bookName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+  });
+
+  BookRequest.associate = (models) => {
+    BookRequest.belongsTo(models.User, { foreignKey: "studentId", as: "student" });
+    BookRequest.belongsTo(models.Book, { foreignKey: "bookId", as: "book" });
+  };
+
+  return BookRequest;
+};
 
 // // Associations using string keys (not recommended but possible)
 // BookRequest.belongsTo(Book, {
@@ -36,4 +29,4 @@ const BookRequest = sequelize.define(
 //   allowNull: false,
 // });
 
-module.exports = BookRequest;
+// module.exports = BookRequest;
